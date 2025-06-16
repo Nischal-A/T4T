@@ -3,19 +3,12 @@ import { Bell, Settings, User, LogOut } from 'lucide-react';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { useNavigate } from 'react-router-dom';
-import { useToast } from '@/hooks/use-toast';
 
 export const DashboardHeader = () => {
   const navigate = useNavigate();
-  const { toast } = useToast();
 
   const handleLogout = () => {
-    localStorage.removeItem('isAuthenticated');
-    toast({
-      title: 'Logged Out',
-      description: 'You have been successfully logged out',
-    });
-    navigate('/login');
+    navigate('/logout');
   };
 
   return (
