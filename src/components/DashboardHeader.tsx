@@ -1,8 +1,23 @@
 
-import { Bell, Settings, User } from 'lucide-react';
+import { Bell, Settings, User, LogOut } from 'lucide-react';
 import { Badge } from '@/components/ui/badge';
+import { Button } from '@/components/ui/button';
+import { useNavigate } from 'react-router-dom';
+import { useToast } from '@/hooks/use-toast';
 
 export const DashboardHeader = () => {
+  const navigate = useNavigate();
+  const { toast } = useToast();
+
+  const handleLogout = () => {
+    localStorage.removeItem('isAuthenticated');
+    toast({
+      title: 'Logged Out',
+      description: 'You have been successfully logged out',
+    });
+    navigate('/login');
+  };
+
   return (
     <header className="bg-white border-b border-slate-200 px-4 py-4 shadow-sm">
       <div className="container mx-auto flex items-center justify-between">
@@ -25,6 +40,14 @@ export const DashboardHeader = () => {
           </div>
           <Settings className="h-5 w-5 text-slate-600 hover:text-slate-800 cursor-pointer transition-colors" />
           <User className="h-5 w-5 text-slate-600 hover:text-slate-800 cursor-pointer transition-colors" />
+          <Button
+            variant="ghost"
+            size="sm"
+            onClick={handleLogout}
+            className="text-slate-600 hover:text-slate-800"
+          >
+            <LogOut className="h-4 w-4" />
+          </Button>
         </div>
       </div>
     </header>
