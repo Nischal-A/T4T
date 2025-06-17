@@ -1,4 +1,5 @@
 
+import { useState } from 'react';
 import { DashboardHeader } from '@/components/DashboardHeader';
 import { Navigation } from '@/components/Navigation';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
@@ -6,9 +7,38 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
-import { User, Mail, Phone, MapPin, Camera } from 'lucide-react';
+import { ImageUpload } from '@/components/ImageUpload';
+import { ColorPicker } from '@/components/ColorPicker';
+import { useToast } from '@/hooks/use-toast';
+import { User, Mail, Phone, MapPin, Camera, Palette } from 'lucide-react';
 
 const Profile = () => {
+  const { toast } = useToast();
+  const [profileData, setProfileData] = useState({
+    firstName: 'John',
+    lastName: 'Doe',
+    email: 'john.doe@company.com',
+    phone: '+1 (555) 123-4567',
+    jobTitle: 'Department Administrator',
+    department: 'IT Operations',
+    employeeId: 'EMP-2024-001',
+    startDate: '2020-01-15',
+    avatar: '',
+    bannerColor: '#3b82f6',
+    accentColor: '#10b981'
+  });
+
+  const handleInputChange = (field: string, value: string) => {
+    setProfileData(prev => ({ ...prev, [field]: value }));
+  };
+
+  const handleSaveProfile = () => {
+    toast({
+      title: "Profile updated",
+      description: "Your profile has been saved successfully"
+    });
+  };
+
   return (
     <div className="min-h-screen bg-background dark:bg-background page-enter">
       <DashboardHeader />
@@ -21,50 +51,114 @@ const Profile = () => {
         </div>
 
         <div className="grid gap-6 max-w-4xl">
+          {/* Profile Banner Section */}
           <Card className="card-hover animate-scale-in">
             <CardHeader>
-              <CardTitle className="text-foreground">Personal Information</CardTitle>
-              <CardDescription>Update your personal details and contact information</CardDescription>
+              <CardTitle className="text-foreground">Profile Banner</CardTitle>
+              <CardDescription>Customize your profile appearance</CardDescription>
+            </CardHeader>
+            <CardContent>
+              <div 
+                className="h-32 rounded-lg mb-4 relative"
+                style={{ backgroundColor: profileData.bannerColor }}
+              >
+                <div className="absolute bottom-4 left-4">
+                  <Avatar className="h-16 w-16 border-4 border-white">
+                    <AvatarImage src={profileData.avatar} />
+                    <AvatarFallback className="text-lg">
+                      {profileData.firstName[0]}{profileData.lastName[0]}
+                    </AvatarFallback>
+                  </Avatar>
+                </div>
+              </div>
+              
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <ColorPicker
+                  label="Banner Color"
+                  value={profileData.bannerColor}
+                  onChange={(color) => handleInputChange('bannerColor', color)}
+                />
+                <ColorPicker
+                  label="Accent Color"
+                  value={profileData.accentColor}
+                  onChange={(color) => handleInputChange('accentColor', color)}
+                />
+              </div>
+            </CardContent>
+          </Card>
+
+          {/* Avatar Upload Section */}
+          <Card className="card-hover animate-scale-in" style={{ animationDelay: '100ms' }}>
+            <CardHeader>
+              <CardTitle className="text-foreground">Profile Picture</CardTitle>
+              <CardDescription>Upload and customize your avatar</CardDescription>
             </CardHeader>
             <CardContent>
               <div className="flex items-center space-x-6 mb-6">
-                <div className="relative">
-                  <Avatar className="h-24 w-24">
-                    <AvatarImage src="/placeholder.svg" />
-                    <AvatarFallback className="text-2xl">JD</AvatarFallback>
-                  </Avatar>
-                  <Button size="sm" variant="secondary" className="absolute -bottom-2 -right-2 rounded-full h-8 w-8 p-0">
-                    <Camera className="h-4 w-4" />
-                  </Button>
-                </div>
-                <div>
-                  <h3 className="text-lg font-semibold text-foreground">John Doe</h3>
-                  <p className="text-muted-foreground">Department Administrator</p>
-                </div>
-              </div>
-
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <div className="space-y-2">
-                  <Label htmlFor="first-name" className="text-foreground">First Name</Label>
-                  <Input id="first-name" value="John" />
-                </div>
-                <div className="space-y-2">
-                  <Label htmlFor="last-name" className="text-foreground">Last Name</Label>
-                  <Input id="last-name" value="Doe" />
-                </div>
-                <div className="space-y-2">
-                  <Label htmlFor="email" className="text-foreground">Email</Label>
-                  <Input id="email" type="email" value="john.doe@company.com" />
-                </div>
-                <div className="space-y-2">
-                  <Label htmlFor="phone" className="text-foreground">Phone</Label>
-                  <Input id="phone" value="+1 (555) 123-4567" />
+                <Avatar className="h-24 w-24">
+                  <AvatarImage src={profileData.avatar} />
+                  <AvatarFallback className="text-2xl">
+                    {profileData.firstName[0]}{profileData.lastName[0]}
+                  </AvatarFallback>
+                </Avatar>
+                <div className="flex-1">
+                  <ImageUpload
+                    currentImage={profileData.avatar}
+                    onImageChange={(imageUrl) => handleInputChange('avatar', imageUrl)}
+                    className="max-w-md"
+                  />
                 </div>
               </div>
             </CardContent>
           </Card>
 
-          <Card className="card-hover animate-scale-in" style={{ animationDelay: '100ms' }}>
+          {/* Personal Information */}
+          <Card className="card-hover animate-scale-in" style={{ animationDelay: '200ms' }}>
+            <CardHeader>
+              <CardTitle className="text-foreground">Personal Information</CardTitle>
+              <CardDescription>Update your personal details and contact information</CardDescription>
+            </CardHeader>
+            <CardContent>
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div className="space-y-2">
+                  <Label htmlFor="first-name" className="text-foreground">First Name</Label>
+                  <Input 
+                    id="first-name" 
+                    value={profileData.firstName}
+                    onChange={(e) => handleInputChange('firstName', e.target.value)}
+                  />
+                </div>
+                <div className="space-y-2">
+                  <Label htmlFor="last-name" className="text-foreground">Last Name</Label>
+                  <Input 
+                    id="last-name" 
+                    value={profileData.lastName}
+                    onChange={(e) => handleInputChange('lastName', e.target.value)}
+                  />
+                </div>
+                <div className="space-y-2">
+                  <Label htmlFor="email" className="text-foreground">Email</Label>
+                  <Input 
+                    id="email" 
+                    type="email" 
+                    value={profileData.email}
+                    onChange={(e) => handleInputChange('email', e.target.value)}
+                  />
+                </div>
+                <div className="space-y-2">
+                  <Label htmlFor="phone" className="text-foreground">Phone</Label>
+                  <Input 
+                    id="phone" 
+                    value={profileData.phone}
+                    onChange={(e) => handleInputChange('phone', e.target.value)}
+                  />
+                </div>
+              </div>
+            </CardContent>
+          </Card>
+
+          {/* Work Information */}
+          <Card className="card-hover animate-scale-in" style={{ animationDelay: '300ms' }}>
             <CardHeader>
               <CardTitle className="text-foreground">Work Information</CardTitle>
               <CardDescription>Your role and department details</CardDescription>
@@ -73,40 +167,67 @@ const Profile = () => {
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div className="space-y-2">
                   <Label htmlFor="job-title" className="text-foreground">Job Title</Label>
-                  <Input id="job-title" value="Department Administrator" />
+                  <Input 
+                    id="job-title" 
+                    value={profileData.jobTitle}
+                    onChange={(e) => handleInputChange('jobTitle', e.target.value)}
+                  />
                 </div>
                 <div className="space-y-2">
                   <Label htmlFor="department" className="text-foreground">Department</Label>
-                  <Input id="department" value="IT Operations" />
+                  <Input 
+                    id="department" 
+                    value={profileData.department}
+                    onChange={(e) => handleInputChange('department', e.target.value)}
+                  />
                 </div>
                 <div className="space-y-2">
                   <Label htmlFor="employee-id" className="text-foreground">Employee ID</Label>
-                  <Input id="employee-id" value="EMP-2024-001" />
+                  <Input 
+                    id="employee-id" 
+                    value={profileData.employeeId}
+                    onChange={(e) => handleInputChange('employeeId', e.target.value)}
+                  />
                 </div>
                 <div className="space-y-2">
                   <Label htmlFor="start-date" className="text-foreground">Start Date</Label>
-                  <Input id="start-date" value="2020-01-15" />
+                  <Input 
+                    id="start-date" 
+                    type="date"
+                    value={profileData.startDate}
+                    onChange={(e) => handleInputChange('startDate', e.target.value)}
+                  />
                 </div>
               </div>
             </CardContent>
           </Card>
 
-          <Card className="card-hover animate-scale-in" style={{ animationDelay: '200ms' }}>
+          {/* Activity Summary */}
+          <Card className="card-hover animate-scale-in" style={{ animationDelay: '400ms' }}>
             <CardHeader>
               <CardTitle className="text-foreground">Activity Summary</CardTitle>
               <CardDescription>Your recent activity and achievements</CardDescription>
             </CardHeader>
             <CardContent>
               <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                <div className="text-center p-4 bg-muted rounded-lg">
+                <div 
+                  className="text-center p-4 rounded-lg"
+                  style={{ backgroundColor: `${profileData.accentColor}20`, borderColor: profileData.accentColor, borderWidth: '1px' }}
+                >
                   <div className="text-2xl font-bold text-foreground">156</div>
                   <div className="text-sm text-muted-foreground">Reports Generated</div>
                 </div>
-                <div className="text-center p-4 bg-muted rounded-lg">
+                <div 
+                  className="text-center p-4 rounded-lg"
+                  style={{ backgroundColor: `${profileData.accentColor}20`, borderColor: profileData.accentColor, borderWidth: '1px' }}
+                >
                   <div className="text-2xl font-bold text-foreground">23</div>
                   <div className="text-sm text-muted-foreground">Projects Completed</div>
                 </div>
-                <div className="text-center p-4 bg-muted rounded-lg">
+                <div 
+                  className="text-center p-4 rounded-lg"
+                  style={{ backgroundColor: `${profileData.accentColor}20`, borderColor: profileData.accentColor, borderWidth: '1px' }}
+                >
                   <div className="text-2xl font-bold text-foreground">89%</div>
                   <div className="text-sm text-muted-foreground">Performance Score</div>
                 </div>
@@ -115,7 +236,11 @@ const Profile = () => {
           </Card>
 
           <div className="flex justify-end pt-4">
-            <Button className="glow-effect">
+            <Button 
+              className="glow-effect" 
+              onClick={handleSaveProfile}
+              style={{ backgroundColor: profileData.accentColor }}
+            >
               <User className="h-4 w-4 mr-2" />
               Update Profile
             </Button>
