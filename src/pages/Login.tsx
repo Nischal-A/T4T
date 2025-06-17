@@ -1,4 +1,3 @@
-
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
@@ -37,15 +36,15 @@ const Login = () => {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-50 to-blue-50 flex items-center justify-center px-4">
+    <div className="min-h-screen bg-background dark:bg-background flex items-center justify-center px-4 page-enter">
       <div className="w-full max-w-md">
-        <div className="bg-white rounded-lg shadow-lg p-8">
-          <div className="text-center mb-8">
-            <div className="h-12 w-12 bg-gradient-to-r from-blue-600 to-blue-700 rounded-lg flex items-center justify-center mx-auto mb-4">
+        <div className="bg-card dark:bg-card rounded-lg shadow-lg p-8 dark:carbon-fiber card-hover">
+          <div className="text-center mb-8 animate-fade-in">
+            <div className="h-12 w-12 bg-gradient-to-r from-blue-600 to-blue-700 dark:from-blue-500 dark:to-blue-600 rounded-lg flex items-center justify-center mx-auto mb-4 glow-effect">
               <span className="text-white font-bold text-lg">DM</span>
             </div>
-            <h1 className="text-2xl font-bold text-slate-800">Department Monitor</h1>
-            <p className="text-slate-600 mt-2">Sign in to access your dashboard</p>
+            <h1 className="text-2xl font-bold text-foreground">Department Monitor</h1>
+            <p className="text-muted-foreground mt-2">Sign in to access your dashboard</p>
           </div>
 
           <form onSubmit={handleLogin} className="space-y-6">
@@ -90,10 +89,10 @@ const Login = () => {
             </Button>
           </form>
 
-          <div className="mt-8 p-4 bg-slate-50 rounded-lg">
-            <h3 className="text-sm font-semibold text-slate-700 mb-2">Test Credentials:</h3>
-            <p className="text-xs text-slate-600">Username: <span className="font-mono bg-white px-1 rounded">admin</span></p>
-            <p className="text-xs text-slate-600">Password: <span className="font-mono bg-white px-1 rounded">dashboard123</span></p>
+          <div className="mt-8 p-4 bg-muted rounded-lg animate-scale-in" style={{ animationDelay: '300ms' }}>
+            <h3 className="text-sm font-semibold text-foreground mb-2">Test Credentials:</h3>
+            <p className="text-xs text-muted-foreground">Username: <span className="font-mono bg-background px-1 rounded">admin</span></p>
+            <p className="text-xs text-muted-foreground">Password: <span className="font-mono bg-background px-1 rounded">dashboard123</span></p>
           </div>
         </div>
       </div>
