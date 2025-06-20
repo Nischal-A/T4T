@@ -5,6 +5,7 @@ import { User, users } from '@/data/users';
 interface AuthContextType {
   currentUser: User | null;
   login: (username: string, password: string) => boolean;
+  loginWithEmployeeId: (employeeId: string, password: string) => boolean;
   logout: () => void;
   updateUser: (updates: Partial<User>) => void;
   switchUser: (userId: string) => void;
@@ -57,6 +58,17 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
     return false;
   };
 
+  const loginWithEmployeeId = (employeeId: string, password: string): boolean => {
+    const user = userDatabase.find(u => u.employeeId === employeeId && u.password === password);
+    if (user) {
+      setCurrentUser(user);
+      localStorage.setItem('currentUserId', user.id);
+      localStorage.setItem('isAuthenticated', 'true');
+      return true;
+    }
+    return false;
+  };
+
   const logout = () => {
     setCurrentUser(null);
     localStorage.removeItem('currentUserId');
@@ -87,6 +99,7 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
   const value: AuthContextType = {
     currentUser,
     login,
+    loginWithEmployeeId,
     logout,
     updateUser,
     switchUser,

@@ -6,21 +6,24 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { useToast } from '@/hooks/use-toast';
 import { useAuth } from '@/contexts/AuthContext';
-import { Lock, User, Crown, Shield, Users } from 'lucide-react';
+import { Lock, User, Crown, Shield, Users, Chrome, IdCard } from 'lucide-react';
 import { users } from '@/data/users';
 
 const Login = () => {
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
+  const [employeeId, setEmployeeId] = useState('');
+  const [employeePassword, setEmployeePassword] = useState('');
   const [isLoading, setIsLoading] = useState(false);
   const [showAccounts, setShowAccounts] = useState(false);
   const navigate = useNavigate();
   const { toast } = useToast();
-  const { login } = useAuth();
+  const { login, loginWithEmployeeId } = useAuth();
 
-  const handleLogin = async (e: React.FormEvent) => {
+  const handleUsernameLogin = async (e: React.FormEvent) => {
     e.preventDefault();
     setIsLoading(true);
 
@@ -40,6 +43,43 @@ const Login = () => {
       });
     }
     setIsLoading(false);
+  };
+
+  const handleEmployeeIdLogin = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setIsLoading(true);
+
+    const success = loginWithEmployeeId(employeeId, employeePassword);
+    
+    if (success) {
+      toast({
+        title: 'Login Successful',
+        description: 'Welcome to the Department Monitor',
+      });
+      navigate('/dashboard');
+    } else {
+      toast({
+        title: 'Login Failed',
+        description: 'Invalid employee ID or password',
+        variant: 'destructive',
+      });
+    }
+    setIsLoading(false);
+  };
+
+  const handleGoogleLogin = () => {
+    // Simulate Google OAuth login
+    const googleUser = users.find(u => u.username === 'admin'); // Default to admin for demo
+    if (googleUser) {
+      const success = login(googleUser.username, googleUser.password);
+      if (success) {
+        toast({
+          title: 'Google Login Successful',
+          description: 'Welcome back via Google!',
+        });
+        navigate('/dashboard');
+      }
+    }
   };
 
   const handleQuickLogin = (user: any) => {
@@ -72,47 +112,119 @@ const Login = () => {
               <p className="text-muted-foreground mt-2">Sign in to access your dashboard</p>
             </div>
 
-            <form onSubmit={handleLogin} className="space-y-6">
-              <div className="space-y-2">
-                <Label htmlFor="username">Username</Label>
-                <div className="relative">
-                  <User className="absolute left-3 top-3 h-4 w-4 text-slate-400" />
-                  <Input
-                    id="username"
-                    type="text"
-                    placeholder="Enter username"
-                    value={username}
-                    onChange={(e) => setUsername(e.target.value)}
-                    className="pl-10"
-                    required
-                  />
-                </div>
-              </div>
+            <Tabs defaultValue="username" className="w-full">
+              <TabsList className="grid w-full grid-cols-3">
+                <TabsTrigger value="username">Username</TabsTrigger>
+                <TabsTrigger value="employeeid">Employee ID</TabsTrigger>
+                <TabsTrigger value="google">Google</TabsTrigger>
+              </TabsList>
 
-              <div className="space-y-2">
-                <Label htmlFor="password">Password</Label>
-                <div className="relative">
-                  <Lock className="absolute left-3 top-3 h-4 w-4 text-slate-400" />
-                  <Input
-                    id="password"
-                    type="password"
-                    placeholder="Enter password"
-                    value={password}
-                    onChange={(e) => setPassword(e.target.value)}
-                    className="pl-10"
-                    required
-                  />
-                </div>
-              </div>
+              <TabsContent value="username" className="space-y-4">
+                <form onSubmit={handleUsernameLogin} className="space-y-6">
+                  <div className="space-y-2">
+                    <Label htmlFor="username">Username</Label>
+                    <div className="relative">
+                      <User className="absolute left-3 top-3 h-4 w-4 text-slate-400" />
+                      <Input
+                        id="username"
+                        type="text"
+                        placeholder="Enter username"
+                        value={username}
+                        onChange={(e) => setUsername(e.target.value)}
+                        className="pl-10"
+                        required
+                      />
+                    </div>
+                  </div>
 
-              <Button 
-                type="submit" 
-                className="w-full" 
-                disabled={isLoading}
-              >
-                {isLoading ? 'Signing in...' : 'Sign In'}
-              </Button>
-            </form>
+                  <div className="space-y-2">
+                    <Label htmlFor="password">Password</Label>
+                    <div className="relative">
+                      <Lock className="absolute left-3 top-3 h-4 w-4 text-slate-400" />
+                      <Input
+                        id="password"
+                        type="password"
+                        placeholder="Enter password"
+                        value={password}
+                        onChange={(e) => setPassword(e.target.value)}
+                        className="pl-10"
+                        required
+                      />
+                    </div>
+                  </div>
+
+                  <Button 
+                    type="submit" 
+                    className="w-full" 
+                    disabled={isLoading}
+                  >
+                    {isLoading ? 'Signing in...' : 'Sign In with Username'}
+                  </Button>
+                </form>
+              </TabsContent>
+
+              <TabsContent value="employeeid" className="space-y-4">
+                <form onSubmit={handleEmployeeIdLogin} className="space-y-6">
+                  <div className="space-y-2">
+                    <Label htmlFor="employee-id">Employee ID</Label>
+                    <div className="relative">
+                      <IdCard className="absolute left-3 top-3 h-4 w-4 text-slate-400" />
+                      <Input
+                        id="employee-id"
+                        type="text"
+                        placeholder="Enter employee ID"
+                        value={employeeId}
+                        onChange={(e) => setEmployeeId(e.target.value)}
+                        className="pl-10"
+                        required
+                      />
+                    </div>
+                  </div>
+
+                  <div className="space-y-2">
+                    <Label htmlFor="employee-password">Password</Label>
+                    <div className="relative">
+                      <Lock className="absolute left-3 top-3 h-4 w-4 text-slate-400" />
+                      <Input
+                        id="employee-password"
+                        type="password"
+                        placeholder="Enter password"
+                        value={employeePassword}
+                        onChange={(e) => setEmployeePassword(e.target.value)}
+                        className="pl-10"
+                        required
+                      />
+                    </div>
+                  </div>
+
+                  <Button 
+                    type="submit" 
+                    className="w-full" 
+                    disabled={isLoading}
+                  >
+                    {isLoading ? 'Signing in...' : 'Sign In with Employee ID'}
+                  </Button>
+                </form>
+              </TabsContent>
+
+              <TabsContent value="google" className="space-y-4">
+                <div className="space-y-6">
+                  <Button 
+                    onClick={handleGoogleLogin}
+                    variant="outline"
+                    className="w-full h-12"
+                    disabled={isLoading}
+                  >
+                    <Chrome className="h-5 w-5 mr-2" />
+                    Continue with Google
+                  </Button>
+                  
+                  <div className="text-center text-sm text-muted-foreground">
+                    Quick demo login - connects to admin account
+                  </div>
+                </div>
+              </TabsContent>
+            </Tabs>
 
             <div className="mt-6 text-center">
               <Button 
@@ -162,7 +274,7 @@ const Login = () => {
                         </div>
                         <div className="text-left flex-1">
                           <div className="font-medium">{user.firstName} {user.lastName}</div>
-                          <div className="text-xs text-muted-foreground">@{user.username}</div>
+                          <div className="text-xs text-muted-foreground">@{user.username} | {user.employeeId}</div>
                         </div>
                         <Badge variant="default" className="ml-auto">
                           <Shield className="h-3 w-3 mr-1" />
@@ -197,7 +309,7 @@ const Login = () => {
                         </div>
                         <div className="text-left flex-1">
                           <div className="font-medium">{user.firstName} {user.lastName}</div>
-                          <div className="text-xs text-muted-foreground">@{user.username}</div>
+                          <div className="text-xs text-muted-foreground">@{user.username} | {user.employeeId}</div>
                         </div>
                         <Badge variant="secondary">
                           <User className="h-3 w-3 mr-1" />
