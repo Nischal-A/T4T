@@ -1,5 +1,5 @@
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { DashboardHeader } from '@/components/DashboardHeader';
 import { Navigation } from '@/components/Navigation';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
@@ -10,34 +10,65 @@ import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { ImageUpload } from '@/components/ImageUpload';
 import { ColorPicker } from '@/components/ColorPicker';
 import { useToast } from '@/hooks/use-toast';
-import { User, Mail, Phone, MapPin, Camera, Palette } from 'lucide-react';
+import { useAuth } from '@/contexts/AuthContext';
+import { User } from 'lucide-react';
 
 const Profile = () => {
   const { toast } = useToast();
+  const { currentUser, updateUser } = useAuth();
+  
   const [profileData, setProfileData] = useState({
-    firstName: 'John',
-    lastName: 'Doe',
-    email: 'john.doe@company.com',
-    phone: '+1 (555) 123-4567',
-    jobTitle: 'Department Administrator',
-    department: 'IT Operations',
-    employeeId: 'EMP-2024-001',
-    startDate: '2020-01-15',
+    firstName: '',
+    lastName: '',
+    email: '',
+    phone: '',
+    jobTitle: '',
+    department: '',
+    employeeId: '',
+    startDate: '',
     avatar: '',
     bannerColor: '#3b82f6',
     accentColor: '#10b981'
   });
+
+  // Initialize profile data from current user
+  useEffect(() => {
+    if (currentUser) {
+      setProfileData({
+        firstName: currentUser.firstName,
+        lastName: currentUser.lastName,
+        email: currentUser.email,
+        phone: currentUser.phone,
+        jobTitle: currentUser.jobTitle,
+        department: currentUser.department,
+        employeeId: currentUser.employeeId,
+        startDate: currentUser.startDate,
+        avatar: currentUser.avatar,
+        bannerColor: currentUser.bannerColor,
+        accentColor: currentUser.accentColor
+      });
+    }
+  }, [currentUser]);
 
   const handleInputChange = (field: string, value: string) => {
     setProfileData(prev => ({ ...prev, [field]: value }));
   };
 
   const handleSaveProfile = () => {
+    if (!currentUser) return;
+
+    // Update the user in the AuthContext
+    updateUser(profileData);
+
     toast({
       title: "Profile updated",
       description: "Your profile has been saved successfully"
     });
   };
+
+  if (!currentUser) {
+    return <div>Loading...</div>;
+  }
 
   return (
     <div className="min-h-screen bg-background dark:bg-background page-enter">
@@ -187,6 +218,7 @@ const Profile = () => {
                     id="employee-id" 
                     value={profileData.employeeId}
                     onChange={(e) => handleInputChange('employeeId', e.target.value)}
+                    readOnly
                   />
                 </div>
                 <div className="space-y-2">
