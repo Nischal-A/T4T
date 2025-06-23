@@ -12,6 +12,15 @@ export default defineConfig(({ mode }) => ({
   },
   // Set base path for GitHub Pages deployment
   base: process.env.NODE_ENV === 'production' ? '/dept-view-dashboard/' : '/',
+  build: {
+    outDir: 'dist',
+    assetsDir: 'assets',
+    rollupOptions: {
+      output: {
+        manualChunks: undefined,
+      },
+    },
+  },
   plugins: [
     react(),
     mode === 'development' &&
