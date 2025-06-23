@@ -11,19 +11,7 @@ export default defineConfig(({ mode }) => ({
     port: 8080,
   },
   // Set base path for GitHub Pages deployment
-  base: "/dept-view-dashboard/",
-  build: {
-    outDir: 'dist',
-    assetsDir: 'assets',
-    rollupOptions: {
-      output: {
-        manualChunks: undefined,
-        assetFileNames: 'assets/[name]-[hash][extname]',
-        chunkFileNames: 'assets/[name]-[hash].js',
-        entryFileNames: 'assets/[name]-[hash].js',
-      },
-    },
-  },
+  base: process.env.NODE_ENV === 'production' ? '/dept-view-dashboard/' : '/',
   plugins: [
     react(),
     mode === 'development' &&
